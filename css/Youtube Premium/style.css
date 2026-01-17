@@ -1,0 +1,146 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container{
+  width: 100vw;
+  height: 100vh;
+}
+
+.navbar{
+  border: 1px solid black;
+  /* width: 100%;
+  height: 5%; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background-color: black; */
+}
+
+.leftNavbar{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: start;
+  padding: 10px
+}
+
+.youtubelogo{
+  width: 30%;
+  height: 30%;
+}
+
+.centerNavbar{
+  display: flex;
+  /* gap: 10px; */
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+}
+
+input {
+  /* background-color: black; */
+  font-size: 16px;
+  /* border: 1px solid black; */
+  border: none;
+  width: 50%;
+  padding: 10px 16px;
+  /* border-radius: 20px; */
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
+  border: 1px solid #cbcbcb;
+}
+
+/* search icon*/
+.centerNavbar img:nth-child(2){
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* padding: 7px 15px; */
+  border: 1px solid #cbcbcb;
+  cursor: pointer;
+}
+
+.centerNavbar img:nth-child(3){
+  /* padding-left: 0px; */
+  margin-left: 10px;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+
+
+}
+
+.rightNavbar{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: end;
+  padding: 10px;
+  padding-right: 20px;
+}
+
+.profile{
+  width: 20%;
+  height: 20%;
+  border-radius: 50%;
+}
+
+/* heroSection */
+
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap:50px;
+  background-color: grey;
+  height: 61% ;
+  font-family: Roboto, Arial, sans-serif;
+  /* width: 25%; */
+  /* background-color: black; */
+  /* height: 100%; */
+}
+
+.topHero{
+  margin-top: 50px;
+}
+
+.midHero{
+  /* background-color: red; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  width: 40%;
+  /* background-color: black; */
+  height: 100%;
+  /* background-color: red; */
+}
+
+.lastHero{
+  /* background-color: red; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  width: 30%;
+  /* background-color: black; */
+  height: 100%;
+}
+
+h2{
+  font-family: Roboto, Arial, sans-serif;
+  text-align: center;
+  font-weight: lighter;
+  /* font-weight: 50; */
+  font-size: 32px;
+  line-height: normal;
+}
