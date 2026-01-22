@@ -1,0 +1,22 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  width: 100vw;
+  height: 100vh;
+}
+
+/* fr= fraction */
+.container{
+  width: 60%;
+  height: 50%;
+  display: grid;
+  background-color: aquamarine;
+  /* grid-template-rows: repeat(6, 50px);
+  grid-template-columns: repeat(6, 90px); */
+  /* grid-template-rows: repeat(6, 1fr); */
+  grid-template-columns: 1fr 2fr 3fr;
+}

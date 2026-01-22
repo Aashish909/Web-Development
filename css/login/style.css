@@ -86,3 +86,23 @@ button {
   color: #fff;
   cursor: pointer;
 }
+
+
+@media  screen and (min-width: 320px) and (max-width: 480px) {
+
+    .container{
+      width: 100vw;
+      height: 100vh;
+
+    }
+    .loginContainer {
+        width: 80%;
+        height: 85%;
+        
+        gap: 24px;
+      }
+            h1 {
+              font-family: 'Times New Roman', Times, serif;
+              font-size: 62px;
+            }
+}

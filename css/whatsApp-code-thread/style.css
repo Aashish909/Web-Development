@@ -140,7 +140,7 @@
 
 .btn:hover::before {
   margin-right: 30px;
-  transform: translatex(-150px) translateY(-20px);
+  transform: translatex(-150px) translateY(-40px);
   opacity: 1;
 }
 
