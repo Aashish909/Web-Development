@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet } from "react-router";
 
 const Navbar = () => {
   const navItems = [
@@ -35,30 +36,33 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="w-full shadow-md h-24 flex justify-center items-center">
-      <div className=" w-[70%] flex justify-between">
-        <div className="flex items-center">
-          <img
-            className="w-24"
-            src="https://1000logos.net/wp-content/uploads/2021/05/Swiggy-emblem.png"
-            alt=""
-          />
-          <div className="flex items-center gap-2">
-            <p className="font-bold border-b-2  border-black ">Other</p>
-            <i className="fi fi-rr-angle-small-down mt-1 text-2xl text-orange-500"></i>
+    <>
+      <div className="w-full shadow-md h-24 flex justify-center items-center">
+        <div className=" w-[70%] flex justify-between">
+          <div className="flex items-center">
+            <img
+              className="w-24"
+              src="https://1000logos.net/wp-content/uploads/2021/05/Swiggy-emblem.png"
+              alt=""
+            />
+            <div className="flex items-center gap-2">
+              <p className="font-bold border-b-2  border-black ">Other</p>
+              <i className="fi fi-rr-angle-small-down mt-1 text-2xl text-orange-500"></i>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-14">
+            {navItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-2 ">
+                <i className={"mt-1 text-gray-700 " + item.icon}></i>
+                <p className=" text-gray-700">{item.label}</p>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="flex items-center gap-14">
-          {navItems.map((item) => (
-            <div key={item.id} className="flex items-center gap-2 ">
-              <i className={"mt-1 text-gray-700 " + item.icon}></i>
-              <p className=" text-gray-700">{item.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
+      <Outlet />
+    </>
   );
 };
 
