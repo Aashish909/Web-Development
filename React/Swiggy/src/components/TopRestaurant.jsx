@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { fixedRestaurants } from "../utils/fixedRestaurants";
+// import { fixedRestaurants } from "../utils/fixedRestaurants";
 import RestaurantCard from "./RestaurantCard";
 
-const TopRestaurant = () => {
+const TopRestaurant = ({ data }) => {
+  // console.log("top restaurant:", data);
   const [value, setValue] = useState(0);
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const data =
-      fixedRestaurants?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
-        ?.restaurants;
-    setData(data || []);
-  }, []);
+  // useEffect(() => {
+  //   const data =
+  //     fixedRestaurants?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
+  //       ?.restaurants;
+  //   setData(data || []);
+  // }, []);
 
+  // console.log("top:", data);
   function handlePrev() {
     if (value <= 0) return;
     setValue((prev) => prev - 54);
@@ -34,14 +36,19 @@ const TopRestaurant = () => {
   //   const result = await response.json();
 
   //   console.log(
+  //     "fetch restaurant:",
+  //     result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
+  //       ?.restaurants,
+  //   );
+  //   setData(
   //     result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle
   //       ?.restaurants,
   //   );
   // }
 
-  useEffect(() => {
-    // fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <div className="mt-10">
@@ -81,9 +88,9 @@ const TopRestaurant = () => {
         style={{ translate: `-${value}%` }}
         className="flex mt-4 gap-5 w-full duration-1000"
       >
-        {fixedRestaurants.map((item) => (
-          <div key={item?.info?.id} className="hover:scale-95 duration-300">
-            <RestaurantCard item={item} />
+        {data.map(({ info, cta: { link } }) => (
+          <div key={info.id} className="hover:scale-95 duration-300">
+            <RestaurantCard {...info} link={link} />
           </div>
         ))}
       </div>

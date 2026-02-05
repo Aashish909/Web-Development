@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./components/Navbar";
 import Body from "./components/Body";
 import { Route, Routes } from "react-router";
+import RestaurantMenu from "./components/RestaurantMenu";
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Navbar />}>
           <Route path="/" element={<Body />} />
+          <Route path="/restaurantMenu/:id" element={<RestaurantMenu />} />
         </Route>
       </Routes>
     </>

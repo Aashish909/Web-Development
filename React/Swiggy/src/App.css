@@ -1,0 +1,34 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Gilroy-Medium', sans-serif;
+}
+
+
+.header_label {
+  text-align: left;
+  font-size: 0.75rem;
+  font-family: 'Gilroy-Bold', sans-serif;
+  font-style: normal;
+  color: #A29C9C;
+  opacity: 1;
+}
+
+.subHeader_label {
+  text-align: left;
+  font-size: 0.75rem;
+  font-family: 'Gilroy-Medium', sans-serif;
+  font-style: normal;
+  color: #A29C9C;
+  opacity: 1;
+}
+
+.text_label {
+  text-align: left;
+  font-size: 0.75rem;
+  font-family: 'Gilroy-Light', sans-serif;
+  font-style: normal;
+  color: #A29C9C;
+  opacity: 1;
+}

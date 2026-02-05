@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { fixedData } from "../utils/fixedData";
+// import { fixedData } from "../utils/fixedData";
 
-const OnYourMind = () => {
-  const [data, setData] = useState([]);
+const OnYourMind = ({ data }) => {
+  // const [data, setData] = useState([]);
+
+  console.log("data::::", data);
 
   const [value, setValue] = useState(0);
 
   // console.log(fixedData?.data?.cards[0]?.card?.card?.imageGridCards?.info);
   // setData(fixedData?.data?.cards[0]?.card?.card?.imageGridCards?.info);
 
-  useEffect(() => {
-    const imageGridInfo =
-      fixedData?.data?.cards[0]?.card?.card?.imageGridCards?.info;
+  //  useEffect(() => {
+  //     const imageGridInfo =
+  //       fixedData?.data?.cards[0]?.card?.card?.imageGridCards?.info;
 
-    setData(imageGridInfo || []);
-  }, []);
-
+  //     setData(imageGridInfo || []);
+  //   }, []);
   // async function fetchData() {
-  //   const data = fetch(
+  //   const data = await fetch(
   //     "https://corsproxy.io/?" +
   //       encodeURIComponent(
   //         "https://www.swiggy.com/dapi/restaurants/list/v5?lat=18.9690247&lng=72.8205292&page_type=DESKTOP_WEB_LISTING",
@@ -25,12 +26,13 @@ const OnYourMind = () => {
   //   );
 
   //   const result = await data.json();
-  //   console.log(result);
+  //   console.log("on your mind:", result);
+  //   setData(result?.data?.cards[0]?.card?.card?.imageGridCards?.info);
   // }
 
-  useEffect(() => {
-    // fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   // function handlePrev() {
   //   value <= 0 ? "" : setValue((prev) => prev - 31);
