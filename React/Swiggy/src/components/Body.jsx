@@ -13,7 +13,7 @@ const Body = () => {
     const response = await fetch(
       "https://corsproxy.io/?" +
         encodeURIComponent(
-          "https://www.swiggy.com/dapi/restaurants/list/v5?lat=23.6523312&lng=86.1326811&page_type=DESKTOP_WEB_LISTING",
+          "https://www.swiggy.com/dapi/restaurants/list/v5?lat=18.9690247&lng=72.8205292&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING",
         ),
     );
 
@@ -24,7 +24,7 @@ const Body = () => {
         ?.restaurants,
     );
     setOnYourMindData(result?.data?.cards[0]?.card?.card?.imageGridCards?.info);
-    // console.log("onyouy mmidn::", result?.data?.cards[0]);
+    // console.log("onyouy mmidn::", result?.data?.cards);
   }
 
   useEffect(() => {

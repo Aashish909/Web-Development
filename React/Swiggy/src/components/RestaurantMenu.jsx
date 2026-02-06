@@ -2,13 +2,20 @@ import React, { use, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { MenuData } from "../utils/MenuData";
 
+let veg =
+  "https://i.pinimg.com/736x/e4/1f/f3/e41ff3b10a26b097602560180fb91a62.jpg";
+let nonVeg =
+  "https://www.pngkey.com/png/full/245-2459071_non-veg-icon-non-veg-symbol-png.png";
+
 const RestaurantMenu = () => {
   const [rawMenu, setRawMenu] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [resInfo, setResInfo] = useState([]);
   const [offers, setOffers] = useState([]);
+  const [topPicksData, setTopPicksData] = useState(null);
   const [value, setValue] = useState(0);
   // const [currIndex, setCurrIndex] = useState(false);
+  // console.log(topPicksData.card.card.carousel);
 
   useEffect(() => {
     setRawMenu(MenuData);
@@ -35,6 +42,17 @@ const RestaurantMenu = () => {
       rawMenu[0]?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards?.filter(
         (c) => c?.card?.card?.itemCards || c?.card?.card?.categories,
       );
+
+    const topPicksArr =
+      rawMenu[0]?.data?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
+        (data) => data?.card?.card?.title === "Top Picks",
+      );
+
+    const topPicks = topPicksArr?.[0];
+
+    // console.log("topspictitle", topPicks);
+
+    setTopPicksData(topPicks);
 
     setMenuCategories(filtered || []);
   }, [rawMenu]);
@@ -224,6 +242,77 @@ const RestaurantMenu = () => {
             </div>
           </div>
 
+          {topPicksData && (
+            <div className="w-full overflow-hidden">
+              <div className="flex justify-between mt-6">
+                <h1 className="font-bold text-2xl">
+                  {/* Top Picks */}
+                  {topPicksData.card.card.title}
+                  {/* {console.log(topPicksData)} */}
+                </h1>
+                <div className="flex gap-3">
+                  <div
+                    onClick={handlePrev}
+                    className={`rounded-full w-9 h-9 flex justify-center items-center transition-all duration-300
+              ${
+                value <= 0
+                  ? "bg-gray-100 opacity-40 pointer-events-none cursor-not-allowed"
+                  : "bg-gray-200 cursor-pointer hover:bg-gray-300"
+              }
+            `}
+                  >
+                    <i className="fi-rr-arrow-small-left text-2xl mt-1"></i>
+                  </div>
+
+                  <div
+                    onClick={handleNext}
+                    className={`rounded-full w-9 h-9 flex justify-center items-center transition-all duration-300
+                    ${
+                      value >= 344 * 4
+                        ? "bg-gray-100 opacity-40 pointer-events-none cursor-not-allowed"
+                        : "bg-gray-200 cursor-pointer hover:bg-gray-300"
+                    }
+                  `}
+                  >
+                    <i className="fi-rr-arrow-small-right text-2xl mt-1"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="flex gap-3 mt-5 transition-transform duration-300"
+                style={{ transform: `translateX(-${value}px)` }}
+              >
+                {topPicksData.card.card.carousel.map(
+                  ({
+                    creativeId,
+                    dish: {
+                      info: { price },
+                    },
+                  }) => (
+                    <div className="min-w-[307px] h-[315px] relative">
+                      <img
+                        className="w-full h-full"
+                        src={
+                          "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_292,h_300/" +
+                          creativeId
+                        }
+                        alt=""
+                      />
+
+                      <div className=" w-full flex justify-between absolute bottom-5 text-white px-4">
+                        <p className="font-bold">₹{price / 100}</p>
+                        <button className=" border drop-shadow font-bold text-green-600 px-10 py-2 rounded-md bg-white">
+                          ADD
+                        </button>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
+
           <div>
             {/* {menuCategories.map(
               (
@@ -306,7 +395,7 @@ function MenuCard({ card }) {
       <>
         <div className="mt-5">
           <div className="flex justify-between">
-            <h1 className="font-bold text-xl">
+            <h1 className={"font-bold text-" + (card["@type"] ? "xl" : "base")}>
               {title} ({itemCards.length})
             </h1>
             <i
@@ -319,14 +408,19 @@ function MenuCard({ card }) {
           {isOpen && <DetailMenu itemCards={itemCards} />}
         </div>
 
-        <hr className="my-3 border-[10px] border-slate-200" />
+        <hr
+          className={
+            "my-3 border-slate-200 border-" +
+            (card["@type"] ? "[8px]" : "[4px]")
+          }
+        />
       </>
     );
   } else {
     const { title, categories } = card;
     return (
       <div>
-        <h1>{title}</h1>
+        <h1 className="font-bold text-xl">{title}</h1>
         {categories.map((data, i) => (
           <MenuCard key={i} card={data} />
         ))}
@@ -336,13 +430,114 @@ function MenuCard({ card }) {
 }
 
 function DetailMenu({ itemCards }) {
+  // console.log("detail Menu: ", itemCards[0].card.info);
   return (
-    <div className="m-5">
+    <div className="my-5">
       {itemCards.map(({ card: { info } }) => (
-        <h1>{info.name}</h1>
+        <DetailMenuCard info={info} />
       ))}
     </div>
   );
+}
+
+function DetailMenuCard({
+  info: {
+    name,
+    price,
+    finalPrice,
+    itemAttribute: { vegClassifier } = {},
+    ratings: { aggregatedRating: { rating, ratingCountV2 } = {} } = {},
+    description,
+    imageId,
+  },
+}) {
+  const [isMore, setIsMore] = useState(false);
+
+  const trimDes = (description ?? "").substring(0, 140) + "...";
+
+  return (
+    <>
+      <div className="w-full flex justify-between min-h-[182px]">
+        <div className="w-[70%]">
+          <img
+            className="w-5"
+            src={vegClassifier === "VEG" ? veg : nonVeg}
+            alt=""
+          />
+
+          <h2 className="font-bold text-lg">{name}</h2>
+
+          <p>
+            {finalPrice ? (
+              <>
+                <span className="line-through text-gray-400 font-bold">
+                  ₹{price / 100}
+                </span>{" "}
+                <span>₹{finalPrice / 100}</span>
+              </>
+            ) : (
+              <span>₹{price / 100}</span>
+            )}
+          </p>
+
+          {rating <= 3 ? (
+            <p className="flex items-center gap-1">
+              <i className="fi fi-ss-star text-yellow-400"></i>
+              <span>
+                <span className="text-yellow-500">{rating}</span>{" "}
+                <span className="text-gray-400">({ratingCountV2})</span>
+              </span>
+            </p>
+          ) : (
+            <p className="flex items-center gap-1">
+              <i className="fi fi-ss-star text-green-800"></i>
+              <span className="font-semibold text-sm">
+                <span className="text-green-800">{rating}</span>{" "}
+                <span className="text-gray-400">({ratingCountV2})</span>
+              </span>
+            </p>
+          )}
+
+          {(description ?? "").length > 140 ? (
+            <div>
+              <span className="text-gray-600">
+                {isMore ? description : trimDes}
+              </span>
+              <button
+                className="font-bold text-gray-600 ml-1"
+                onClick={() => setIsMore(!isMore)}
+              >
+                {isMore ? "less" : "more"}
+              </button>
+            </div>
+          ) : (
+            <span className="text-gray-600">{description}</span>
+          )}
+        </div>
+
+        <div className="w-[20%] relative h-full">
+          <img
+            className="rounded-xl aspect-square"
+            src={
+              "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fill/" +
+              imageId
+            }
+            alt=""
+          />
+
+          <button className="bg-white px-10 py-2 drop-shadow-xl rounded-xl text-lg font-bold text-green-600 absolute bottom-[-20px] left-5">
+            ADD
+          </button>
+        </div>
+      </div>
+
+      <hr className="my-5 h-1 border-slate-200" />
+    </>
+  );
+}
+
+function TopPicks() {
+  return <h1>topspcis</h1>;
 }
 
 export default RestaurantMenu;
