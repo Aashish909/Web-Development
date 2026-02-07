@@ -1,6 +1,7 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { MenuData } from "../utils/MenuData";
+import { Coordinates } from "../context/contextApi";
 
 let veg =
   "https://i.pinimg.com/736x/e4/1f/f3/e41ff3b10a26b097602560180fb91a62.jpg";
@@ -16,6 +17,10 @@ const RestaurantMenu = () => {
   const [value, setValue] = useState(0);
   // const [currIndex, setCurrIndex] = useState(false);
   // console.log(topPicksData.card.card.carousel);
+
+  const {
+    coordinate: { lat, lng },
+  } = useContext(Coordinates);
 
   useEffect(() => {
     setRawMenu(MenuData);

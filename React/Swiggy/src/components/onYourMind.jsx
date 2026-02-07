@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 const OnYourMind = ({ data }) => {
   // const [data, setData] = useState([]);
 
-  console.log("data::::", data);
+  // console.log("data::::", data);
 
   const [value, setValue] = useState(0);
 
@@ -87,7 +87,7 @@ const OnYourMind = ({ data }) => {
         style={{ translate: `-${value}%` }}
         className={`flex mt-4  duration-1000`}
       >
-        {data.map((item) => (
+        {data?.map((item) => (
           <img
             key={item.id}
             className="w-40"

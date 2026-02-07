@@ -631,7 +631,7 @@ const MatchDetail = () => {
   };
 
   const [data, setData] = useState([]);
-  console.log("data: ", data);
+  // console.log("data: ", data);
   let { id } = useParams();
 
   async function fetchMatchDetails() {
