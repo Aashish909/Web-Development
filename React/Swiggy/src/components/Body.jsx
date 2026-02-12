@@ -6,6 +6,8 @@ import { Coordinates } from "../context/contextApi";
 import parseSwiggyCards from "./parseSwiggyCards";
 import ErrorPage from "./ErrorPage";
 import Navbar from "./Navbar";
+import { useSelector } from "react-redux";
+import Shimmer from "./Shimmer";
 
 const Body = () => {
   const [topRestaurantData, setTopRestaurantData] = useState([]);
@@ -18,6 +20,30 @@ const Body = () => {
     coordinate: { lat, lng },
   } = useContext(Coordinates);
 
+  const filterVal = useSelector((state) => state.filterSlice.filterVal);
+  // console.log("filterVal", filterVal);
+
+  // console.log("topRestaurantData", topRestaurantData);
+  const filteredData = topRestaurantData.filter((item) => {
+    if (!filterVal) return true;
+
+    switch (filterVal) {
+      case "Rating 4.0+":
+        return item?.info?.avgRating >= 4.0;
+      case "Offers":
+        return Boolean(item?.info?.aggregatedDiscountInfoV3);
+      case "Rs. 300-500":
+        return (
+          item?.info?.costForTwo?.slice(1, 4) >= 300 &&
+          item?.info?.costForTwo?.slice(1, 4) <= 500
+        );
+      case "Less than Rs. 300":
+        return item?.info?.costForTwo?.slice(1, 4) < 300;
+      default:
+        return true;
+    }
+  });
+
   async function fetchData() {
     const response = await fetch(
       "https://corsproxy.io/?" +
@@ -28,7 +54,7 @@ const Body = () => {
 
     const result = await response.json();
     setData(result);
-    console.log(result);
+    // console.log(result);
 
     const cards = result?.data?.cards || [];
 
@@ -68,7 +94,19 @@ const Body = () => {
 
   return (
     <div className="w-full">
-      <div className="w-[75%] mx-auto mt-2 overflow-hidden">
+     {
+      topRestaurantData.length  ? ( <div
+        className="
+                w-[80%]
+                px-2
+                sm:px-2
+                md:px-4
+                max-w-[1400px]
+                mx-auto
+                mt-2
+                overflow-hidden
+              "
+      >
         {data.statusCode === 1 ? (
           <ErrorPage message={data.statusMessage} />
         ) : (
@@ -76,12 +114,13 @@ const Body = () => {
             <OnYourMind data={onYourMindData} />
             <TopRestaurant data={topRestaurantData} title={topResTitle} />
             <OnlineFoodDelivery
-              data={topRestaurantData}
+              data={filterVal ? filteredData : topRestaurantData}
               title={onlineResTitle}
             />
           </>
         )}
-      </div>
+      </div>) :(<Shimmer/>)
+     }
     </div>
   );
 };

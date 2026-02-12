@@ -6,7 +6,7 @@ const ErrorPage = ({ message }) => {
       <div className="text-center max-w-md">
         {/* Image */}
         <img
-          src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/portal/m/404.png"
+          src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/connection_error_bsppck"
           alt="Page not found"
           className="w-72 mx-auto mb-6"
         />

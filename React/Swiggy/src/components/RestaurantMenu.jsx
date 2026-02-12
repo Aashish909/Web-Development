@@ -1,7 +1,14 @@
 import React, { use, useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { MenuData } from "../utils/MenuData";
-import { Coordinates } from "../context/contextApi";
+import { CartContext, Coordinates } from "../context/contextApi";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, clearCart } from "../redux/cartSlice";
+import toast from "react-hot-toast";
+import AddToCartBtn from "./AddToCartBtn";
+import { toggleIsDiffRes } from "../redux/toggleSlice";
+import Shimmer from "./Shimmer";
+import { MenuShimmer } from "./MenuShimmer";
 
 let veg =
   "https://i.pinimg.com/736x/e4/1f/f3/e41ff3b10a26b097602560180fb91a62.jpg";
@@ -133,7 +140,10 @@ const RestaurantMenu = () => {
   // }
   return (
     <div className="w-full ">
-      <div className="w-[800px]  mx-auto pt-4">
+
+      {
+        
+      rawMenu.length ? (<div className="max-w-[800px] w-full mx-auto pt-4 px-3 sm:px-4">
         <p className="text-[12px] text-slate-500">
           <Link to={"/"}>
             <span className="hover:text-slate-700 hover:cursor-pointer">
@@ -151,41 +161,69 @@ const RestaurantMenu = () => {
         </p>
 
         <h1 className="font-bold pt-4 text-2xl">{resInfo?.name}</h1>
-        <div className="w-full h-[214.4px] px-4 pb-4  border-black mt-3 rounded-[30px] bg-gradient-to-t from-gray-300/90 p-5">
-          <div className="w-full border border-gray-300 rounded-[20px] h-full bg-white ">
-            <div className="p-4 w-full">
-              <div className="flex items-center gap-2 font-semibold">
-                <i className="fi fi-ss-circle-star mt-1 text-green-600 text-lg"></i>
+        <div
+          className="w-full
+                        min-h-[200px]
+                        px-3
+                        sm:px-4
+                        pb-4
+                        mt-3
+                        rounded-4xl
+                        bg-gradient-to-t from-gray-300/90"
+        >
+          <div
+            className="
+                    w-full
+                    h-full
+                    bg-white
+                    rounded-3xl
+                    border border-gray-200"
+          >
+            <div className="p-3 sm:p-4 w-full">
+              <div className="flex flex-wrap items-center gap-2 font-semibold text-sm sm:text-base">
+                <i className="fi fi-ss-circle-star text-green-600 text-lg"></i>
                 <span>{resInfo?.avgRatingString}</span>
-                <span>({resInfo?.totalRatingsString})</span>
-                <span className="text-gray-400">•</span>
+                <span className="text-gray-500">
+                  ({resInfo?.totalRatingsString})
+                </span>
+                <span className="text-gray-400 hidden sm:inline">•</span>
                 <span>{resInfo?.costForTwoMessage}</span>
               </div>
               <div>
-                <p className="underline text-orange-600 font-semibold">
+                <p
+                  className="
+                            underline
+                            text-orange-600
+                            font-semibold
+                            text-sm
+                            sm:text-base
+                            line-clamp-2
+                          "
+                >
                   {resInfo?.cuisines?.join(", ")}
                 </p>
 
-                <div className=" flex gap-2 mt-2 font-semibold">
-                  <div className="w-[7px] flex flex-col items-center justify-center ">
+                <div className="flex gap-3 mt-3">
+                  <div className="w-[7px] flex flex-col items-center">
                     <div className="w-[7px] h-[7px] bg-gray-300 rounded-full"></div>
-                    <div className="w-[1px] h-[25px] bg-gray-300 "></div>
+                    <div className="w-[1px] h-[28px] bg-gray-300"></div>
                     <div className="w-[7px] h-[7px] bg-gray-300 rounded-full"></div>
                   </div>
 
-                  <div className="flex flex-col gap-2 font-semibold text-sm ">
-                    <p>
-                      Outlet{"  "}
+                  <div className="flex flex-col gap-2 text-sm font-semibold">
+                    <p className="flex flex-wrap">
+                      Outlet
                       <span className="text-gray-500 pl-2">
                         {resInfo?.locality}
                       </span>
                     </p>
-
-                    <p className="lowercase">{resInfo?.sla?.slaString}</p>
+                    <p className="lowercase text-gray-700">
+                      {resInfo?.sla?.slaString}
+                    </p>
                   </div>
                 </div>
               </div>
-              <hr />
+              {/* <hr /> */}
 
               <div className="p-4 w-full">
                 <div></div>
@@ -295,7 +333,7 @@ const RestaurantMenu = () => {
                       info: { price },
                     },
                   }) => (
-                    <div className="min-w-[307px] h-[315px] relative">
+                    <div className="min-w-[240px] sm:min-w-[307px] h-[260px] sm:h-[315px] relative">
                       <img
                         className="w-full h-full"
                         src={
@@ -352,11 +390,14 @@ const RestaurantMenu = () => {
 
           <div>
             {menuCategories.map(({ card: { card } }) => (
-              <MenuCard card={card} />
+              <MenuCard card={card} resInfo={resInfo} />
             ))}
           </div>
         </div>
-      </div>
+      </div>): (
+        <MenuShimmer/>
+      )
+      }
     </div>
   );
 };
@@ -368,7 +409,7 @@ function Offers({
 }) {
   // console.log(info);
   return (
-    <div className="min-w-[328px] h-[75.2px] border rounded-[20px] flex items-center p-4">
+    <div className="min-w-[260px] sm:min-w-[328px] h-auto border rounded-[20px] flex items-center p-4">
       <img
         className="w-12 h-12"
         src={"https://media-assets.swiggy.com/swiggy/image/upload/" + offerLogo}
@@ -382,7 +423,7 @@ function Offers({
   );
 }
 
-function MenuCard({ card }) {
+function MenuCard({ card, resInfo }) {
   let hello = false;
 
   if (card["@type"]) {
@@ -410,7 +451,7 @@ function MenuCard({ card }) {
               }`}
             ></i>
           </div>
-          {isOpen && <DetailMenu itemCards={itemCards} />}
+          {isOpen && <DetailMenu itemCards={itemCards} resInfo={resInfo} />}
         </div>
 
         <hr
@@ -427,46 +468,96 @@ function MenuCard({ card }) {
       <div>
         <h1 className="font-bold text-xl">{title}</h1>
         {categories.map((data, i) => (
-          <MenuCard key={i} card={data} />
+          <MenuCard key={i} card={data} resInfo={resInfo} />
         ))}
       </div>
     );
   }
 }
 
-function DetailMenu({ itemCards }) {
+function DetailMenu({ itemCards, resInfo }) {
   // console.log("detail Menu: ", itemCards[0].card.info);
   return (
     <div className="my-5">
       {itemCards.map(({ card: { info } }) => (
-        <DetailMenuCard info={info} />
+        <DetailMenuCard info={info} resInfo={resInfo} />
       ))}
     </div>
   );
 }
 
-function DetailMenuCard({
-  info: {
+function DetailMenuCard({ info, resInfo }) {
+  const {
     name,
     price,
     finalPrice,
-    itemAttribute: { vegClassifier } = {},
+    itemAttribute = {},
     ratings: { aggregatedRating: { rating, ratingCountV2 } = {} } = {},
     description,
     imageId,
-  },
-}) {
+  } = info;
+
+  // const { cartData, setCartData } = useContext(CartContext);
+
+  //From redux
+  const cartData = useSelector((state) => state.cartSlice.cartItems);
+  const getResInfoFromLocalStorage = useSelector(
+    (state) => state.cartSlice.resInfo,
+  );
+  const dispatch = useDispatch();
+
+  // const [isDiffRes, setIsDiffRes] = useState(false);
+  const  isDiffRes = useSelector((state) => state.toggleSlice.isDiffRes);
+
+  // function handleAddToCart() {
+  //   // console.log("resInfo: ", resInfo);
+  //   const isAdded = cartData.find((data) => data.id === info.id);
+  //   // let getResInfoFromLocalStorage =
+  //   // JSON.parse(localStorage.getItem("resInfo")) || [];
+  //   if (!isAdded) {
+  //     if (
+  //       getResInfoFromLocalStorage.name === resInfo.name ||
+  //       getResInfoFromLocalStorage.length === 0
+  //     ) {
+  //       dispatch(addToCart({ info, resInfo }));
+  //       toast.success("Added to Cart");
+  //     } else {
+  //       toast.error("Select Same Restaurant");
+  //       handleIsDiffRes();
+  //     }
+  //   } else {
+  //     toast.error("Already Added");
+  //   }
+  // }
+
+  function handleClearCart() {
+    // setCartData([]);
+    dispatch(clearCart());
+    toast.success("Cart is cleared");
+    handleIsDiffRes();
+    // localStorage.setItem("cartItem", JSON.stringify([]));
+    // localStorage.clear();
+  }
   const [isMore, setIsMore] = useState(false);
 
   const trimDes = (description ?? "").substring(0, 140) + "...";
 
+  function handleIsDiffRes() {
+    // setIsDiffRes((prev) => !prev);
+    dispatch(toggleIsDiffRes());
+  }
+
   return (
-    <>
-      <div className="w-full flex justify-between min-h-[182px]">
-        <div className="w-[70%]">
+    <div className="relative -full">
+      <div className="w-full flex sm:flex-row gap-4 sm:gap-0 justify-between min-h-[182px]">
+        <div className="w-[55%] md:w-[70%]">
           <img
             className="w-5"
-            src={vegClassifier === "VEG" ? veg : nonVeg}
+            src={
+              itemAttribute && itemAttribute.vegClassifier === "VEG"
+                ? veg
+                : nonVeg
+            }
             alt=""
           />
 
@@ -520,29 +611,59 @@ function DetailMenuCard({
           )}
         </div>
 
-        <div className="w-[20%] relative h-full">
+        <div className="w-[40%] md:w-[20%] relative  h-full">
           <img
-            className="rounded-xl aspect-square"
+            className="rounded-xl aspect-square "
             src={
-              "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fill/" +
+              "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300/" +
               imageId
             }
             alt=""
           />
 
-          <button className="bg-white px-10 py-2 drop-shadow-xl rounded-xl text-lg font-bold text-green-600 absolute bottom-[-20px] left-5">
+          {/* <button
+            onClick={handleAddToCart}
+            className="bg-white absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-lg text-green-700 font-bold rounded-xl border px-10 py-2 drop-shadow"
+          >
             ADD
-          </button>
+          </button> */}
+          <AddToCartBtn
+            info={info}
+            resInfo={resInfo}
+            handleIsDiffRes={handleIsDiffRes}
+          />
         </div>
       </div>
 
       <hr className="my-5 h-1 border-slate-200" />
-    </>
+      {isDiffRes && (
+        <div
+          className="w-[90%] sm:w-[520px] h-auto fixed bottom-10 left-1/2 -translate-x-1/2
+           flex flex-col gap-2 p-8 border z-50 shadow-md bg-white"
+        >
+          <h1>Items already in cart</h1>
+          <p>
+            Your cart contains items from other restaurant. Would you like to
+            reset your cart for adding items from this restaurant?
+          </p>
+          <div className="flex justify-between gap-3 w-full uppercase">
+            <button
+              onClick={handleIsDiffRes}
+              className="border-2 w-1/2 p-3 border-green-600 text-green-600 cursor-pointer "
+            >
+              No
+            </button>
+            <button
+              onClick={handleClearCart}
+              className="  w-1/2 p-3 bg-green-600 text-white cursor-pointer "
+            >
+              Yes, start a fresh
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
-}
-
-function TopPicks() {
-  return <h1>topspcis</h1>;
 }
 
 export default RestaurantMenu;

@@ -2,6 +2,12 @@
 
 @import "tailwindcss";
 
+*{
+
+  box-sizing: border-box;
+  font-family: 'Gilroy-Medium', sans-serif;
+}
+
 
 @font-face {
   font-family: 'Gilroy-Bold';
@@ -16,4 +22,73 @@
 @font-face {
   font-family: 'Gilroy-Light';
   src: local('Gilroy-Light'), url(./fonts/Gilroy-Light.ttf) format('truetype');
+}
+
+.filterBtn{
+  border: 1px solid grey;
+  padding: 6px 14px;
+  border-radius: 40px;
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.active{
+  background-color: rgb(222, 221, 221);
+  border: 1px solid black;
+}
+
+.active i{
+  display: block;
+}
+
+
+.loader {
+    width: 64px;
+    height: 64px;
+    border: 3px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    opacity: 60%;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+
+    /* Swiggy style shimmer */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  height: 100%;
+  width: 150%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
 }
