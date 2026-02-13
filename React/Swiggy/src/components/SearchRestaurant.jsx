@@ -57,3 +57,16 @@ const SearchRestaurant = ({
 };
 
 export default SearchRestaurant;
+
+
+//Higher Order Component
+export function withHoc(WrappedComponent){
+  return (props)=> {
+    return (
+      <div className="relative">
+        <p className="absolute top-9 text-sm left-6 px-1 bg-gray-600 text-white rounded-md">Ad</p>
+        <WrappedComponent {...props} />
+      </div>
+    );
+  }
+}

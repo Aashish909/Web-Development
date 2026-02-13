@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Dishes from "./Dishes";
-import SearchRestaurant from "./SearchRestaurant";
+import SearchRestaurant, { withHoc } from "./SearchRestaurant";
 import { Coordinates } from "../context/contextApi";
 import { resetSimilarResDish, toggleIsSimilarResDishes } from "../redux/toggleSlice";
 import SearchShimmer from "./SearchShimmer";
@@ -153,6 +153,9 @@ useEffect(() => {
   fetchData();
 }, [debouncedQuery]);
 
+
+const PromotedRes =withHoc(SearchRestaurant)
+
   return (
     <div className="w-full mt-10 md:w-[800px] mx-auto">
       <div className="w-full relative">
@@ -274,7 +277,8 @@ useEffect(() => {
             ))
           ) : (
             restaurantData.map((data) => (
-              <SearchRestaurant key={data?.card?.card?.info?.id} data={data} />
+              data.card?.card?.info?.promoted ? 
+              <PromotedRes data={data}/> : <SearchRestaurant key={data?.card?.card?.info?.id} data={data} />
             ))
           )}
         </div>
