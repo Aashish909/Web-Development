@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Cards from "./components/cards";
 import { data } from "./utils/data";
+import ResMenu from "./components/ResMenu";
 
 function App() {
   const [inputVal, setInputVal] = useState("");
@@ -14,6 +15,7 @@ function App() {
   }
   return (
     <>
+    <ResMenu/>
       <h1>Sale Sale Sale 60% OFF</h1>
       <input
         type="text"

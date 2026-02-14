@@ -87,11 +87,9 @@ useEffect(() => {
 
   async function fetchDishes() {
     const data = await fetch(
-      "https://corsproxy.io/?" +
-        encodeURIComponent(
-          `https://www.swiggy.com/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${debouncedQuery}&trackingId=undefined&submitAction=SUGGESTION&queryUniqueId=e278d92b-ccff-15a9-cb63-44e0fe26e2a8&metaData=%7B%22type%22%3A%22DISH%22%2C%22data%22%3A%7B%22vegIdentifier%22%3A%22NA%22%2C%22cloudinaryId%22%3A%22Autosuggest%2FTop%2520200%2520queries%2FPizza.png%22%2C%22dishFamilyId%22%3A%22846647%22%2C%22dishFamilyIds%22%3A%5B%22846647%22%5D%7D%2C%22businessCategory%22%3A%22SWIGGY_FOOD%22%2C%22displayLabel%22%3A%22Dish%22%7D`,
-        ),
-    );
+     
+          `${import.meta.env.VITE_BASE_URL}/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${debouncedQuery}&trackingId=undefined&submitAction=SUGGESTION&queryUniqueId=e278d92b-ccff-15a9-cb63-44e0fe26e2a8&metaData=%7B%22type%22%3A%22DISH%22%2C%22data%22%3A%7B%22vegIdentifier%22%3A%22NA%22%2C%22cloudinaryId%22%3A%22Autosuggest%2FTop%2520200%2520queries%2FPizza.png%22%2C%22dishFamilyId%22%3A%22846647%22%2C%22dishFamilyIds%22%3A%5B%22846647%22%5D%7D%2C%22businessCategory%22%3A%22SWIGGY_FOOD%22%2C%22displayLabel%22%3A%22Dish%22%7D`,
+        )
     let result = await data.json();
     // console.log(
     //   "Dishes result: ",
@@ -105,11 +103,10 @@ useEffect(() => {
 
   async function fetchRestaurantData() {
     const data = await fetch(
-      "https://corsproxy.io/?" +
-        encodeURIComponent(
-          `https://www.swiggy.com/dapi/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${debouncedQuery}&trackingId=undefined&submitAction=SUGGESTION&queryUniqueId=e278d92b-ccff-15a9-cb63-44e0fe26e2a8&metaData=%7B%22type%22%3A%22DISH%22%2C%22data%22%3A%7B%22vegIdentifier%22%3A%22NA%22%2C%22cloudinaryId%22%3A%22Autosuggest%2FTop%2520200%2520queries%2FPizza.png%22%2C%22dishFamilyId%22%3A%22846647%22%2C%22dishFamilyIds%22%3A%5B%22846647%22%5D%7D%2C%22businessCategory%22%3A%22SWIGGY_FOOD%22%2C%22displayLabel%22%3A%22Dish%22%7D&selectedPLTab=RESTAURANT`,
-        ),
-    );
+      
+          `${import.meta.env.VITE_BASE_URL}/restaurants/search/v3?lat=${lat}&lng=${lng}&str=${debouncedQuery}&trackingId=undefined&submitAction=SUGGESTION&queryUniqueId=e278d92b-ccff-15a9-cb63-44e0fe26e2a8&metaData=%7B%22type%22%3A%22DISH%22%2C%22data%22%3A%7B%22vegIdentifier%22%3A%22NA%22%2C%22cloudinaryId%22%3A%22Autosuggest%2FTop%2520200%2520queries%2FPizza.png%22%2C%22dishFamilyId%22%3A%22846647%22%2C%22dishFamilyIds%22%3A%5B%22846647%22%5D%7D%2C%22businessCategory%22%3A%22SWIGGY_FOOD%22%2C%22displayLabel%22%3A%22Dish%22%7D&selectedPLTab=RESTAURANT`,
+        )
+  
     let result = await data.json();
     // console.log(
     //   "Restaurant result: ",
@@ -198,8 +195,9 @@ const PromotedRes =withHoc(SearchRestaurant)
       </div>
       {!selectedResDish && (
         <div className="my-6 flex flex-wrap gap-3">
-          {filterOptions.map((filterName) => (
+          {filterOptions.map((filterName, index) => (
             <button
+            key={index}
               onClick={() => handleFilterBtn(filterName)}
               className={
                 "filterBtn flex gap-2 " +

@@ -268,8 +268,8 @@ const RestaurantMenu = () => {
             className="flex gap-4 mt-4 transition-transform duration-300"
             style={{ transform: `translateX(-${value}px)` }}
           >
-            {offers.map((data) => (
-              <Offers data={data} />
+            {offers.map((data,i) => (
+              <Offers key={i} data={data} />
             ))}
           </div>
         </div>
@@ -332,8 +332,9 @@ const RestaurantMenu = () => {
                     dish: {
                       info: { price },
                     },
+                    
                   }) => (
-                    <div className="min-w-[240px] sm:min-w-[307px] h-[260px] sm:h-[315px] relative">
+                    <div key={creativeId} className="min-w-[240px] sm:min-w-[307px] h-[260px] sm:h-[315px] relative">
                       <img
                         className="w-full h-full"
                         src={
@@ -389,8 +390,8 @@ const RestaurantMenu = () => {
           </div>
 
           <div>
-            {menuCategories.map(({ card: { card } }) => (
-              <MenuCard card={card} resInfo={resInfo} />
+            {menuCategories.map(({ card: { card }},index) => (
+              <MenuCard key={index} card={card} resInfo={resInfo} />
             ))}
           </div>
         </div>
@@ -479,8 +480,8 @@ function DetailMenu({ itemCards, resInfo }) {
   // console.log("detail Menu: ", itemCards[0].card.info);
   return (
     <div className="my-5">
-      {itemCards.map(({ card: { info } }) => (
-        <DetailMenuCard info={info} resInfo={resInfo} />
+      {itemCards.map(({ card: { info } },i) => (
+        <DetailMenuCard key={i} info={info} resInfo={resInfo} />
       ))}
     </div>
   );
@@ -615,7 +616,7 @@ function DetailMenuCard({ info, resInfo }) {
           <img
             className="rounded-xl aspect-square "
             src={
-              "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300/" +
+              "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_300,h_300,c_fit/" +
               imageId
             }
             alt=""

@@ -33,8 +33,9 @@ const OnlineFoodDelivery = ({ data = [], title }) => {
       <h1 className="font-bold text-2xl mb-8 mt-4">{title}</h1>
 
       <div className="my-6 flex flex-wrap gap-3">
-        {filterOptions.map((data) => (
+        {filterOptions.map((data,i) => (
           <button
+          key={i}
             onClick={() => handleFilterBtn(data.filterName)}
             className={
               "filterBtn flex gap-2 " +

@@ -155,14 +155,14 @@ const Cart = () => {
                 description,
                 imageId,
               },
-              i,
+              index,
             ) => {
               // const [isMore, setIsMore] = useState(false);
 
               const trimDes = (description ?? "").substring(0, 140) + "...";
               return (
                 <>
-                  <div className="w-full flex justify-between min-h-[182px]">
+                  <div key={imageId} className="w-full flex justify-between min-h-[182px]">
                     <div className="w-[55%] md:w-[70%]">
                       <img
                         className="w-5"

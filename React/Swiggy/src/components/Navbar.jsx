@@ -129,7 +129,7 @@ const Navbar = () => {
               >
                 <span className="font-bold border-b border-black">Other</span>
                 <span className="truncate max-w-40 text-gray-500">
-                  {address || "Delhi, India"}
+                  {address || "Mumbai, India"}
                 </span>
                 <i className="fi fi-rr-angle-small-down text-orange-500"></i>
               </div>
@@ -142,7 +142,7 @@ const Navbar = () => {
                   Other
                 </span>
                 <span className="text-sm truncate max-w-44 text-gray-500">
-                  {address || "Delhi, India"}
+                  {address || "Mumbai, India"}
                 </span>
                 <i className="fi fi-rr-angle-small-down text-orange-500"></i>
               </div>
@@ -150,10 +150,10 @@ const Navbar = () => {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-10">
-              {navItems.map((item) =>
+              {navItems.map((item,index) =>
                 item.label === "Sign In" ? (
                   <div
-                    key={item.id}
+                    key={index}
                     onClick={handleLogin}
                     className="flex items-center gap-2 cursor-pointer"
                   >
@@ -168,7 +168,7 @@ const Navbar = () => {
                     <span>{userData?.name || "Sign In"}</span>
                   </div>
                 ) : (
-                  <Link key={item.id} to={item.path}>
+                  <Link key={index} to={item.path}>
                     <div className="flex items-center gap-2 cursor-pointer">
                       <i className={`${item.icon}`}></i>
                       <span>{item.label}</span>
@@ -186,15 +186,15 @@ const Navbar = () => {
             {/* Mobile Icons */}
 
             <div className="flex md:hidden gap-6">
-              {navItems.map((item) =>
+              {navItems.map((item,index) =>
                 item.label === "Sign In" ? (
                   <i
-                    key={item.id}
+                    key={index}
                     className={`${item.icon} text-xl cursor-pointer`}
                     onClick={handleLogin}
                   ></i>
                 ) : (
-                  <Link key={item.id} to={item.path}>
+                  <Link key={index} to={item.path}>
                     <i className={`${item.icon} text-xl cursor-pointer`}></i>
                   </Link>
                 ),

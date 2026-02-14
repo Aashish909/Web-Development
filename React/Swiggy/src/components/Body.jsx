@@ -8,17 +8,16 @@ import ErrorPage from "./ErrorPage";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import Shimmer from "./Shimmer";
+import useRestaurantData from "../hooks/useRestaurantData";
 
 const Body = () => {
-  const [topRestaurantData, setTopRestaurantData] = useState([]);
-  const [onYourMindData, setOnYourMindData] = useState([]);
-  const [topResTitle, setTopResTitle] = useState("");
-  const [onlineResTitle, setOnlineResTitle] = useState("");
-  const [data, setData] = useState({});
-
-  const {
-    coordinate: { lat, lng },
-  } = useContext(Coordinates);
+   const [
+     topRestaurantData,
+     onYourMindData,
+     topResTitle,
+     onlineResTitle,
+     data,
+   ] = useRestaurantData()
 
   const filterVal = useSelector((state) => state.filterSlice.filterVal);
   // console.log("filterVal", filterVal);
@@ -44,53 +43,6 @@ const Body = () => {
     }
   });
 
-  async function fetchData() {
-    const response = await fetch(
-      "https://corsproxy.io/?" +
-        encodeURIComponent(
-          `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`,
-        ),
-    );
-
-    const result = await response.json();
-    setData(result);
-    // console.log(result);
-
-    const cards = result?.data?.cards || [];
-
-    const { onlineTitle, restaurants } = parseSwiggyCards(cards);
-
-    //  On Your Mind
-    const onYourMindCard = cards.find(
-      (c) => c?.card?.card?.imageGridCards?.info,
-    );
-
-    //  Top Restaurants (slider)
-    const topRestaurantCard = cards.find(
-      (c) => c?.card?.card?.gridElements?.infoWithStyle?.restaurants,
-    );
-
-    //  Online Food Delivery title
-    // const onlineFoodCard = cards.find(
-    //   (c) => c?.card?.card?.title && c?.card?.card?.gridElements,
-    // );
-
-    setOnYourMindData(onYourMindCard?.card?.card?.imageGridCards?.info || []);
-
-    setTopRestaurantData(
-      topRestaurantCard?.card?.card?.gridElements?.infoWithStyle?.restaurants ||
-        [],
-    );
-
-    setTopResTitle(topRestaurantCard?.card?.card?.header?.title || "");
-
-    setOnlineResTitle(result.data.cards[2].card.card.title || "");
-    // console.log(onlineFoodCard?.card);
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, [lat, lng]);
 
   return (
     <div className="w-full">

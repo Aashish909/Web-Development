@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Body from "./components/Body";
 import { Route, Routes } from "react-router";
-import RestaurantMenu from "./components/RestaurantMenu";
+// import RestaurantMenu from "./components/RestaurantMenu";
 import { CartContext, Coordinates, Visibility } from "./context/contextApi";
-import Cart from "./components/Cart";
-import ErrorPage from "./components/ErrorPage";
+// import Cart from "./components/Cart";
+// import ErrorPage from "./components/ErrorPage";
 import { useSelector } from "react-redux";
-import SigninPage from "./components/SigninBtn";
-import Search from "./components/Search";
+// import SigninPage from "./components/SigninBtn";
+// import Search from "./components/Search";
+
+const Search = lazy(()=> import("./components/Search"))
+const RestaurantMenu =lazy(()=> import("./components/RestaurantMenu"))
+const Cart = lazy(()=> import("./components/Cart"))
+const ErrorPage = lazy(()=> import("./components/ErrorPage"))
+const SigninPage = lazy(()=> import("./components/SigninBtn"))
 
 const App = () => {
   // const [visible, setVisible] = useState(false);
@@ -42,16 +48,28 @@ const App = () => {
           visible || loginVisible ? "max-h-screen overflow-hidden" : ""
         }
       >
-        <Routes>
-          <Route path="/" element={<Navbar />}>
-            <Route path="/" element={<Body />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/restaurantMenu/:id" element={<RestaurantMenu />} />
-            <Route path="*" element={<ErrorPage />} />
-            <Route path="/signin" element={<SigninPage />} />
-            <Route path="/search" element={<Search />} />
-          </Route>
-        </Routes>
+        <Suspense>
+          <Routes>
+            <Route path="/" element={<Navbar />}>
+              <Route path="/" element={<Body />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route
+                path="/restaurantMenu/:id"
+                element={
+                 <RestaurantMenu/>
+                }
+              />
+              <Route path="*" element={<ErrorPage />} />
+              <Route path="/signin" element={<SigninPage />} />
+              <Route
+                path="/search"
+                element={
+                 <Search/>
+                }
+              />
+            </Route>
+          </Routes>
+        </Suspense>
       </div>
       {/* </Visibility.Provider> */}
     </Coordinates.Provider>
