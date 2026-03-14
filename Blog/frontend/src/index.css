@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "@flaticon/flaticon-uicons/css/all/all";
+
+:root {
+  --primary:#2463eb;
+  --background-light: ##f6f6f8;
+  --background-dark: #111621;
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-background-light: var(--background-light);
+  --color-background-dark: var(--background-dark);
+}
