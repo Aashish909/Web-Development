@@ -21,7 +21,6 @@ const EditorRenderer = ({ content }) => {
 
   const renderBlock = (block) => {
     switch (block.type) {
-      /* ── Paragraph ── */
       case "paragraph":
         return (
           <p
@@ -31,7 +30,6 @@ const EditorRenderer = ({ content }) => {
           />
         );
 
-      /* ── Headers ── */
       case "header": {
         const Tag = `h${block.data.level}`;
         const sizeMap = {
@@ -51,7 +49,6 @@ const EditorRenderer = ({ content }) => {
         );
       }
 
-      /* ── List (ordered / unordered, supports nested) ── */
       case "list": {
         const renderItems = (items, style) => {
           const Tag = style === "ordered" ? "ol" : "ul";
@@ -81,7 +78,6 @@ const EditorRenderer = ({ content }) => {
         );
       }
 
-      /* ── Checklist ── */
       case "checklist":
         return (
           <ul key={block.id} className="space-y-2 not-prose">
@@ -123,7 +119,6 @@ const EditorRenderer = ({ content }) => {
           </ul>
         );
 
-      /* ── Quote ── */
       case "quote":
         return (
           <blockquote
@@ -142,7 +137,6 @@ const EditorRenderer = ({ content }) => {
           </blockquote>
         );
 
-      /* ── Code block ── */
       case "code":
         return (
           <div key={block.id} className="relative group not-prose">
@@ -151,7 +145,6 @@ const EditorRenderer = ({ content }) => {
                 {block.data.code}
               </code>
             </pre>
-            {/* Copy button */}
             <button
               onClick={() => navigator.clipboard.writeText(block.data.code)}
               className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-md font-mono"
@@ -161,7 +154,6 @@ const EditorRenderer = ({ content }) => {
           </div>
         );
 
-      /* ── Delimiter ── */
       case "delimiter":
         return (
           <div
@@ -177,7 +169,6 @@ const EditorRenderer = ({ content }) => {
           </div>
         );
 
-      /* ── Embed (YouTube, Twitter, CodePen…) ── */
       case "embed":
         return (
           <div key={block.id} className="not-prose">
@@ -200,15 +191,13 @@ const EditorRenderer = ({ content }) => {
             </div>
           </div>
         );
-
-      /* ── Image (if you add @editorjs/image later) ── */
       case "image":
         return (
           <figure key={block.id} className="not-prose">
             <img
               src={block.data.file?.url}
               alt={block.data.caption || ""}
-              className={`w-full rounded-xl object-cover ${
+              className={`w-full object-cover ${
                 block.data.withBorder
                   ? "border border-slate-200 dark:border-slate-700"
                   : ""
@@ -222,7 +211,6 @@ const EditorRenderer = ({ content }) => {
           </figure>
         );
 
-      /* ── Unknown block type — skip gracefully ── */
       default:
         return null;
     }

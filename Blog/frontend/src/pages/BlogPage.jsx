@@ -7,12 +7,50 @@ import { addSelectedBlog, removeSelectedBlog } from '../redux/selectedBlogSlice'
 import CommentModal from '../components/CommentModal';
 import { setIsOpen } from '../redux/commentSlice';
 import EditorRenderer from '../components/Editorrenderer';
+import { setComments, setCommentLikes } from "../redux/selectedBlogSlice";
+
+
+const Avatar = ({ name, size = 9 }) => {
+  const initials =
+    name
+      ?.split(" ")
+      .map((w) => w.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join("") || "?";
+  const colors = [
+    "bg-emerald-500",
+    "bg-blue-500",
+    "bg-violet-500",
+    "bg-rose-500",
+    "bg-amber-500",
+    "bg-teal-500",
+  ];
+  const color = colors[name?.charCodeAt(0) % colors.length] || "bg-gray-400";
+  return (
+    <div
+      className={`w-${size} h-${size} rounded-full ${color} flex items-center justify-center text-white font-semibold text-sm flex-shrink-0`}
+    >
+      {initials}
+    </div>
+  );
+};
+
+const formatDate = (dateStr) =>
+  new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
 const BlogPage = () => {
   const { id } = useParams();
   const [blogData, setBlogData] = useState({})
   // console.log(blogData)
   const [isLike, setIsLike] =useState(false)
+  const [comment, setComment] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
 
   // const user = JSON.parse(localStorage.getItem("user"))
   // console.log("user",user)
@@ -96,6 +134,29 @@ const BlogPage = () => {
   function handleComment(){
     dispatch(setIsOpen())
   }
+  async function handlePostComment() {
+    if (!token) {
+      toast.warning("Please sign in to comment");
+      return;
+    }
+    if (!comment.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/blogs/comment/${blogData._id}`,
+        { comment },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      dispatch(setComments(res.data.newComment));
+      toast.success(res.data.message);
+      setComment("");
+      setFocused(false);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
     // useEffect(() => {
     //   fetchBlog();
@@ -169,8 +230,8 @@ const BlogPage = () => {
 
             <div className="max-w-[700px] mx-auto prose prose-slate lg:prose-xl">
               {/* <p className="text-xl leading-relaxed text-[#3a374d] mb-8 first-letter:text-5xl first-letter:uppercase first-letter:font-bold first-letter:text-primary first-letter:mr-3 first-letter:float-left"> */}
-                <EditorRenderer content={blogData.content} />
-                {/* <div>
+              <EditorRenderer content={blogData.content} />
+              {/* <div>
                   {
                     content.blocks.map((block)=> {
                       if(block.type == "header"){
@@ -288,137 +349,96 @@ const BlogPage = () => {
             </div>
 
             <section className="max-w-[700px] mx-auto mt-20">
-              <h3 className="text-2xl font-bold text-[#121118] mb-8">
-                Join the discussion ({comments?.length})
-              </h3>
+              {/* Header */}
+              <h2 className="text-lg font-bold text-gray-900 tracking-tight mb-6">
+                Responses
+                <span className="ml-2 text-sm font-normal text-gray-400">
+                  ({comments?.length || 0})
+                </span>
+              </h2>
 
-              <div className="bg-white p-6 rounded-xl border border-[#f1f0f5] shadow-sm mb-12">
-                <div className="flex gap-4 mb-4">
-                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    JD
+              {/* Compose Box — identical to CommentModal */}
+              <div className="mb-10">
+                <div
+                  className={`rounded-2xl border transition-all duration-200 ${focused ? "border-gray-300 shadow-sm bg-white" : "border-gray-200 bg-gray-50"}`}
+                >
+                  {/* Author row */}
+                  <div className="flex items-center gap-2.5 px-4 pt-3.5">
+                    <Avatar name={user?.name} size={8} />
+                    <span className="text-sm font-semibold text-gray-800">
+                      {user?.name || "Guest"}
+                    </span>
                   </div>
+
+                  {/* Textarea */}
                   <textarea
-                    className="flex-1 min-h-[100px] p-4 bg-background-light border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm"
-                    placeholder="Add to the discussion..."
-                  ></textarea>
-                </div>
-                <div className="flex justify-end">
-                  <button className="px-6 py-2 bg-primary text-white font-bold rounded-lg text-sm hover:opacity-90 transition-opacity">
-                    Post Comment
-                  </button>
+                    rows={focused ? 3 : 1}
+                    value={comment}
+                    placeholder="What are your thoughts?"
+                    onFocus={() => setFocused(true)}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full px-4 pt-2.5 pb-1 text-sm text-gray-700 bg-transparent resize-none focus:outline-none placeholder:text-gray-400 transition-all"
+                  />
+
+                  {/* Actions */}
+                  {focused && (
+                    <div className="flex items-center justify-end gap-2 px-4 pb-3">
+                      <button
+                        onClick={() => {
+                          setComment("");
+                          setFocused(false);
+                        }}
+                        className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium rounded-full hover:bg-gray-100 transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handlePostComment}
+                        disabled={!comment.trim() || submitting}
+                        className="px-5 py-1.5 text-sm font-semibold bg-gray-900 text-white rounded-full hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      >
+                        {submitting ? "Posting..." : "Respond"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-              {/* Fake comment */}
-              <div className="space-y-8">
-                <div className="flex gap-4">
-                  <div
-                    className="size-10 rounded-full bg-cover bg-center shrink-0"
-                    data-alt="User avatar"
-                  >
-                    <img
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr3Q1yn_Z2eRRt1ykBMQ6Y3LiVABMgWHYGjytEY0USCaorSrsZ5n4H70c673258Hy-rPv3Ykh7nC7fjJRJ0h_gt_srZiDs_G7rB4HarFmoODL97ngd0P9vvsax7HLhY7KauCl0X4OHvsevlG0CP9y03ZW3AFFoLRj2zlY4fATPAgdbA0qzXyOd-Sm8STXZh0TlZ00n64KFEQeDCdmnyQnluF-Ik-ixOFnNfMqpG--e_oCinclql5psS5aSak1vYNF52LWTG-uGyOI"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-[#121118]">
-                        Alex Rivera
-                      </span>
-                      <span className="text-xs text-[#67608a]">
-                        2 hours ago
-                      </span>
-                    </div>
-                    <p className="text-[#3a374d] text-base leading-relaxed">
-                      Really insightful read. The point about edge computing is
-                      spot on. We've seen significant improvements since
-                      migrating our static assets to the edge.
-                    </p>
-                    <div className="flex gap-4 mt-3">
-                      <button className="flex items-center gap-1 text-xs font-bold text-[#67608a] hover:text-primary">
-                        <span className="material-symbols-outlined text-sm">
-                          thumb_up
-                        </span>{" "}
-                        14
-                      </button>
-                      <button className="text-xs font-bold text-[#67608a] hover:text-primary">
-                        Reply
-                      </button>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="flex gap-4 ml-12">
-                  <div
-                    className="size-10 rounded-full bg-cover bg-center shrink-0"
-                    data-alt="User avatar"
-                  >
-                    <img
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf7wUFiVIbQlz2WeWAUYaK5KeKGkFvh9FJeyB4m8Vzl1xDzpRw2FCiOX8GkIej_bh4pVX5do4R33CB5dW7Uk6lXP6FbYrSlz85KdMCSufdhCv8OJtpA5u3DtWBdWRNW-7szc-Z9W2ljTvrUxsTmvTeLWI4nEIlESQQKD9588b8NuUsdz0H3lbGubESZoo9iWk_G88LRVlJQrBcMiZ8B1DPlKpxlsLK-w5aA02P177b7FVPJXpwyWqWO662r8nRcoUTxBJVAJLhQOE"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-[#121118]">
-                        Marcus Chen
-                      </span>
-                      <span className="text-xs text-[#67608a]">1 hour ago</span>
-                    </div>
-                    <p className="text-[#3a374d] text-base leading-relaxed">
-                      Which edge platform are you using? I've been considering
-                      Cloudflare Workers for our next project.
+              {/* Comments List — identical card to CommentModal's CommentItem */}
+              <div className="divide-y divide-gray-100">
+                {comments?.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <svg
+                      className="w-10 h-10 text-gray-200 mb-3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-400 font-medium">
+                      No responses yet
                     </p>
-                    <div className="flex gap-4 mt-3">
-                      <button className="flex items-center gap-1 text-xs font-bold text-[#67608a] hover:text-primary">
-                        <span className="material-symbols-outlined text-sm">
-                          thumb_up
-                        </span>{" "}
-                        3
-                      </button>
-                      <button className="text-xs font-bold text-[#67608a] hover:text-primary">
-                        Reply
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div
-                    className="size-10 rounded-full bg-cover bg-center shrink-0"
-                    data-alt="User avatar"
-                  >
-                    <img
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB-UlKl3OodibBLjPJ-kf0iHjwTsZ9RwpcJH4rP_yJB_xvAPF3p6fVax5ufsjS3bqd4iJDH9FJQsuwkEmcjsDdXqqX0cXkoaJgvaqMuzdu9K0ArfIyQntCTQLLEclGrpJUP2JJ2cPX1J7572mk4CapNyJE_YKt7G-pnYS5LCulcHMWlSkvYVCtCH9vCaSpgBKV3dEO-Tx17v4Out9Be6xsJf1LpERpvJ5dDgOuNn2jeuJiYLQoOrPauK2250NldDcA-TEE2zoxIhI"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-[#121118]">
-                        Sarah Miller
-                      </span>
-                      <span className="text-xs text-[#67608a]">
-                        5 hours ago
-                      </span>
-                    </div>
-                    <p className="text-[#3a374d] text-base leading-relaxed">
-                      Thanks for sharing! Would love to see a part 2 focusing
-                      more on the specific AI integration techniques for MERN.
+                    <p className="text-xs text-gray-300 mt-1">
+                      Be the first to share your thoughts
                     </p>
-                    <div className="flex gap-4 mt-3">
-                      <button className="flex items-center gap-1 text-xs font-bold text-[#67608a] hover:text-primary">
-                        <span className="material-symbols-outlined text-sm">
-                          thumb_up
-                        </span>{" "}
-                        8
-                      </button>
-                      <button className="text-xs font-bold text-[#67608a] hover:text-primary">
-                        Reply
-                      </button>
-                    </div>
                   </div>
-                </div>
+                ) : (
+                  comments.map((c) => (
+                    <InlineCommentItem
+                      key={c._id}
+                      comment={c}
+                      token={token}
+                      userId={user?.id}
+                      blogCreatorId={blogData?.creator?._id}
+                    />
+                  ))
+                )}
               </div>
             </section>
           </article>

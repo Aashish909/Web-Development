@@ -14,25 +14,30 @@ const { randomUUID } = new ShortUniqueId({ length: 10 });
 async function createBlog(req, res) {
   try {
     const creator = req.user;
-    const { title, description, draft, content } = req.body;
-    const image = req.file;
+    const { title, description, draft } = req.body;
+    const { image, images } = req.files;
+    // console.log(image)
+    const content =
+      typeof req.body.content === "string"
+        ? JSON.parse(req.body.content)
+        : req.body.content;
 
-    console.log({title, description, content})
+    // console.log({image, title, description, content: JSON.parse(req.body.content)})
 
-    // if (!title) {
-    //   return res.status(400).json({ message: "Title is required" });
-    // }
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
 
-    // if (!description) {
-    //   return res.status(400).json({ message: "Description is required" });
-    // }
+    if (!description) {
+      return res.status(400).json({ message: "Description is required" });
+    }
 
-    // if (!image) {
-    //   return res.status(400).json({ message: "Image is required" });
-    // }
-    // if (!content) {
-    //   return res.status(400).json({ message: "Content is required" });
-    // }
+    if (!image) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+    if (!content) {
+      return res.status(400).json({ message: "Content is required" });
+    }
 
     // const findUser = await UserModel.findById(creator);
 
@@ -40,32 +45,52 @@ async function createBlog(req, res) {
     //   return res.status(404).json({ message: "User not found" });
     // }
 
-    // const { secure_url, public_id } = await uploadImage(image.path);
+    let imageIndex = 0;
+    for (let i = 0; i < content.blocks.length; i++) {
+      const block = content.blocks[i];
+      if (block.type == "image") {
+        // console.log(images[imageIndex])
+        const { secure_url, public_id } = await uploadImage(
+          `data:image/jpeg;base64,${images[imageIndex].buffer.toString("base64")}`,
+        );
+
+        // console.log(secure_url, public_id)
+        block.data.file = {
+          url: secure_url,
+          imageId: public_id,
+        };
+        imageIndex++;
+      }
+    }
+
+    const { secure_url, public_id } = await uploadImage(
+      `data:image/jpeg;base64,${image[0].buffer.toString("base64")}`,
+    );
 
     // fs.unlinkSync(image.path);
 
-    // const blogId =
-    //   title.toLowerCase().split(" ").join("-") + "-" + randomUUID();
+    const blogId =
+      title.toLowerCase().split(" ").join("-") + "-" + randomUUID();
 
-    // const blog = await BlogModel.create({
-    //   title,
-    //   description,
-    //   draft,
-    //   creator,
-    //   image: secure_url,
-    //   imageId: public_id,
-    //   blogId,
-    //   content
-    // });
+    const blog = await BlogModel.create({
+      title,
+      description,
+      draft,
+      creator,
+      image: secure_url,
+      imageId: public_id,
+      blogId,
+      content,
+    });
 
-    // await UserModel.findByIdAndUpdate(creator, {
-    //   $push: { blogs: blog._id },
-    // });
+    await UserModel.findByIdAndUpdate(creator, {
+      $push: { blogs: blog._id },
+    });
 
-    // return res.status(201).json({
-    //   message: "Blog created successfully",
-    //   blog,
-    // });
+    return res.status(201).json({
+      message: "Blog created successfully",
+      blog,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -129,7 +154,11 @@ async function updateBlog(req, res) {
     const creator = req.user;
     const { id } = req.params;
     const { title, description, draft } = req.body;
-    const image = req.file;
+    // const image = req.files;
+
+    const content = JSON.parse(req.body.content);
+    const existingImages = JSON.parse(req.body.existingImages);
+    // console.log(image, existingImages)
 
     const blog = await BlogModel.findOne({ blogId: id });
 
@@ -144,26 +173,62 @@ async function updateBlog(req, res) {
         message: "You are not authorized",
       });
     }
+    let imagesToDelete = blog.content.blocks
+      .filter((block) => block.type == "image")
+      .filter((block)=> 
+          !existingImages.find(({url})=> url == block.data.file.url))
+          .map((block)=> block.data.file.imageId)
+
+    // console.log(imagesToDelete);
+
+    // if(imagesToDelete.length > 0){
+    //   await Promise.all(
+    //     imagesToDelete.map((id)=> deleteImagefromCloudinary(id))
+    //   )
+    // }
+
+    if(req.files.images){
+      let imageIndex = 0;
+      for (let i = 0; i < content.blocks.length; i++) {
+        const block = content.blocks[i];
+        if (block.type == "image" && block.data.file.image) {
+          // console.log(images[imageIndex])
+          const { secure_url, public_id } = await uploadImage(
+            `data:image/jpeg;base64,${req.files.images[imageIndex].buffer.toString("base64")}`,
+          );
+
+          // console.log(secure_url, public_id)
+          block.data.file = {
+            url: secure_url,
+            imageId: public_id,
+          };
+          imageIndex++;
+        }
+      }
+    }
 
     let updateData = { title, description, draft };
 
-    if (image) {
+    if (req.files.image) {
       if (blog.imageId) {
         await deleteImagefromCloudinary(blog.imageId);
       }
 
-      const uploadResult = await uploadImage(image.path);
+      const uploadResult = await uploadImage(
+        `data:image/jpeg;base64,${req.files.image[0].buffer.toString("base64")}`,
+      );
 
       if (uploadResult) {
         updateData.image = uploadResult.secure_url;
         updateData.imageId = uploadResult.public_id;
       }
 
-      if (fs.existsSync(image.path)) {
-        fs.unlinkSync(image.path);
-      }
+      // if (fs.existsSync(image.path)) {
+      //   fs.unlinkSync(image.path);
+      // }
     }
 
+  updateData.content = content || updateData.content
     const updatedBlog = await BlogModel.findByIdAndUpdate(
       blog._id,
       updateData,

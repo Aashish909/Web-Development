@@ -26,14 +26,14 @@ const AddBlog = () => {
   const [blogData, setBlogData] = useState({
     title: "",
     description: "",
-    image: "",
+    image: null,
     content: "",
   });
   const [preview, setPreview] = useState(null);
 
   // const token = JSON.parse(localStorage.getItem("token"));
   const { token } = useSelector((slice) => slice.userSlice);
-  const { title, description, image } = useSelector(
+  const { title, description, image, content } = useSelector(
     (slice) => slice.selectedBlogSlice,
   );
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const AddBlog = () => {
   async function fetchBlog() {
     try {
       const res = await axios.get(`http://localhost:3000/api/v1/blogs/${id}`);
-      console.log(res);
+      // console.log(res);
       setBlogData({
         title: res.data.blog.title,
         description: res.data.blog.description,
@@ -64,6 +64,7 @@ const AddBlog = () => {
       title: title,
       description: description,
       image: image,
+      content: content
     });
     setPreview(image);
   }
@@ -73,7 +74,17 @@ const AddBlog = () => {
     formData.append("title", blogData.title)
     formData.append("description", blogData.description)
     formData.append("image", blogData.image)
-    formData.append("content", blogData.content);
+    formData.append("content", JSON.stringify(blogData.content));
+
+    // const images = [];
+
+    blogData.content.blocks.forEach((block)=> {
+      if(block.type == 'image'){
+        // images.push(block.data.file.image)
+        formData.append("images", block.data.file.image);
+      }
+    })
+
 
     try {
       const response = await axios.post(
@@ -88,17 +99,51 @@ const AddBlog = () => {
       );
       // console.log(response);
       toast.success(response.data.message);
-      // navigate("/");
+      navigate("/");
     } catch (error) {
       console.log(error.response);
       toast.error(error.response.data.message || "Server error");
     }
   }
   async function handleUpdateBlog() {
+    // console.log(blogData)
+
+    let formData = new FormData()
+    formData.append("title", blogData.title)
+    formData.append("description", blogData.description)
+    formData.append("image", blogData.image)
+    formData.append("content", JSON.stringify(blogData.content))
+
+    let existingImages = [];
+
+    blogData.content.blocks.forEach((block) => {
+      if (block.type == "image" ) {
+        if (block.data.file.image){
+          // images.push(block.data.file.image)
+          formData.append("images", block.data.file.image)
+        
+      }else{
+        existingImages.push({
+          url: block.data.file.url,
+          imageId: block.data.file.imageId
+        });
+      }
+      }
+    });
+    // for(let data of formData.entries()){
+    //   console.log(data)
+
+    // }
+
+    // console.log(existingImages)
+
+    formData.append("existingImages", JSON.stringify(existingImages))
+    
+    
     try {
       const response = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/blogs/${id}`,
-        blogData,
+        formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -119,6 +164,7 @@ const AddBlog = () => {
     editorjsRef.current = new EditorJS({
       holder: "editorjs",
       placeholder: "Write your story...",
+      data: content,
       tools: {
         header: {
           class: Header,

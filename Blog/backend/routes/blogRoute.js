@@ -6,11 +6,16 @@ const { addComment, deleteComment, editComment, likeComment } = require("../cont
 const upload = require("../utils/multer");
 const router = express.Router();
 
-router.post('/blogs',verifyUser, upload.single("image"), createBlog)
+router.post('/blogs',verifyUser, upload.fields([{name: "image"}, {name : "images"}]), createBlog)
 // router.post("/blogs", verifyUser,createBlog);
 router.get('/blogs', getBlogs)
 router.get('/blogs/:blogId', getBlog)
-router.patch("/blogs/:id",verifyUser, upload.single("image"), updateBlog);
+router.patch(
+  "/blogs/:id",
+  verifyUser,
+  upload.fields([{ name: "image" }, { name: "images" }]),
+  updateBlog,
+);
 
 router.delete('/blogs/:id',verifyUser, deleteBlog)
 router.post("/blogs/like/:id", verifyUser, likeBlog);
